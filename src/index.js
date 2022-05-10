@@ -49,33 +49,6 @@ app.on('activate', () => {
 
 // In this file you can include the rest of your app's specific main process
 // code. You can also put them in separate files and import them here.
-const Sequelize = require('sequelize');
-const db = new Sequelize('postgres://localhost/electron-test', {
-  logging: false,
-});
 
-console.log('test');
-
-const User = db.define('user', {
-  firstName: {
-    type: Sequelize.STRING,
-  },
-  lastName: {
-    type: Sequelize.STRING,
-  },
-});
-
-const init = async () => {
-  try {
-    await db.sync({ force: true });
-    const lisa = await User.create({ firstName: 'Lisa', lastName: 'Knox' });
-    const kitty = await User.create({
-      firstName: 'Jean-Michel',
-      lastName: 'Cat',
-    });
-  } catch (error) {
-    console.log(error);
-  }
-};
-
+const { init } = require('./server/index');
 init();

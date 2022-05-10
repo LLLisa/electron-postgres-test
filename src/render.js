@@ -28,18 +28,3 @@
 // };
 
 // init();
-
-// import React from 'react';
-// import * as ReactDom from 'react-dom/client';
-
-// class Main extends React.Component {
-//   render() {
-//     console.log('component');
-//     return <hr />;
-//   }
-// }
-
-// const container = document.getElementById('root');
-// console.log(container);
-// const root = ReactDom.createRoot(container);
-// root.render(<Main />);
