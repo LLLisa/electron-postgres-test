@@ -27,4 +27,6 @@ const init = async () => {
   }
 };
 
-module.exports = { db, init, models: { User } };
+const app = require('./api');
+
+module.exports = { db, init, models: { User }, app };
