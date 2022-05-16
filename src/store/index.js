@@ -5,6 +5,7 @@ import axios from 'axios';
 
 //slice
 const LOAD_USERS = 'LOAD_USERS';
+const ADD_USER = 'ADD_USER';
 
 export const loadUsers = () => {
   return async (dispatch) => {
@@ -20,10 +21,29 @@ export const loadUsers = () => {
   };
 };
 
+export const addUser = (user) => {
+  return async (dispatch) => {
+    try {
+      // const response = axios.post('/users', { test: 'test' });
+      const response = await axios({
+        method: 'post',
+        url: '/users',
+        baseURL: 'http://localhost:42069',
+        data: { user },
+      });
+      dispatch({ type: ADD_USER, newUser: response.data });
+    } catch (error) {
+      console.log(error);
+    }
+  };
+};
+
 const users = (state = [], action) => {
   switch (action.type) {
     case LOAD_USERS:
       return action.users;
+    case ADD_USER:
+      return [...state, action.newUser];
     default:
       return state;
   }

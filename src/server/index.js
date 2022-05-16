@@ -34,15 +34,24 @@ const init = async () => {
 };
 
 app.use('/dist', express.static(path.join(__dirname, '../../dist')));
+app.use(express.json());
 
 app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, '../index.html'));
 });
 
 app.get('/users', async (req, res, next) => {
-  //not called???
   try {
     const response = await User.findAll();
+    res.send(response);
+  } catch (error) {
+    next(error);
+  }
+});
+
+app.post('/users', async (req, res, next) => {
+  try {
+    const response = await User.create(req.body.user);
     res.send(response);
   } catch (error) {
     next(error);
