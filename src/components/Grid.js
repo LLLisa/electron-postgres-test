@@ -57,23 +57,21 @@ class Grid extends React.Component {
                 })}
               </tr>
             </thead>
+            <tbody>
+              {this.props[selectedTable].map((row, i) => {
+                return (
+                  <tr key={i}>
+                    {Object.values(row).map((field, i) => {
+                      return <td key={i}>{field}</td>;
+                    })}
+                  </tr>
+                );
+              })}
+            </tbody>
           </table>
         ) : (
           <p>table not found</p>
         )}
-        {/* <div>
-          {users.length ? (
-            <ul>
-              {users.map((user) => (
-                <li key={user.id}>
-                  {user.firstName} {user.lastName}
-                </li>
-              ))}
-            </ul>
-          ) : (
-            ''
-          )}
-        </div> */}
         <form>
           <input
             name="table"

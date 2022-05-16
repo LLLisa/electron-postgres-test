@@ -72,7 +72,6 @@ app.post('/users', async (req, res, next) => {
 });
 
 app.get('/todos', async (req, res, next) => {
-  console.log('~~~~~~~~~~~~~~api hit');
   try {
     const response = await Todo.findAll();
     res.send(response);
