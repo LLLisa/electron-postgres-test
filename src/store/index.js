@@ -6,10 +6,17 @@ import axios from 'axios';
 //slice
 const LOAD_USERS = 'LOAD_USERS';
 
-const loadUsers = () => {
+export const loadUsers = () => {
   return async (dispatch) => {
-    const response = axios.get('/users');
-    dispatch({ type: LOAD_USERS, users: response.data });
+    try {
+      const response = await axios({
+        url: '/users',
+        baseURL: 'http://localhost:42069',
+      });
+      dispatch({ type: LOAD_USERS, users: response.data });
+    } catch (error) {
+      console.log(error);
+    }
   };
 };
 
@@ -27,3 +34,5 @@ const reducer = combineReducers({
 });
 
 const store = createStore(reducer, applyMiddleware(thunk, logger));
+
+export default store;

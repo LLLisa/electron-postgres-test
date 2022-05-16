@@ -2,6 +2,11 @@ const Sequelize = require('sequelize');
 const db = new Sequelize('postgres://localhost/electron-test', {
   logging: false,
 });
+const path = require('path');
+const express = require('express');
+const app = express();
+
+// const app = require('./api');
 
 const User = db.define('user', {
   firstName: {
@@ -22,11 +27,26 @@ const init = async () => {
     });
     const kiera = await User.create({ firstName: 'Kiera', lastName: 'Chien' });
     console.log('~~~db seeded!~~~');
+    app.listen(42069, () => console.log(`listening on port hadrcoded 42069`));
   } catch (error) {
     console.log(error);
   }
 };
 
-const app = require('./api');
+app.use('/dist', express.static(path.join(__dirname, '../../dist')));
 
-module.exports = { db, init, models: { User }, app };
+app.get('/', (req, res) => {
+  res.sendFile(path.join(__dirname, '../index.html'));
+});
+
+app.get('/users', async (req, res, next) => {
+  //not called???
+  try {
+    const response = await User.findAll();
+    res.send(response);
+  } catch (error) {
+    next(error);
+  }
+});
+
+module.exports = { db, init, User, app };
