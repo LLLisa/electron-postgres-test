@@ -1,6 +1,6 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { loadUsers, addUser } from '../store';
+import { loadUsers, loadTodos, addUser } from '../store';
 
 class Grid extends React.Component {
   constructor() {
@@ -19,6 +19,7 @@ class Grid extends React.Component {
   componentDidMount() {
     console.log('CDM', this.props);
     this.props.loadUsers();
+    this.props.loadTodos();
   }
 
   handleOnChange(ev) {
@@ -106,6 +107,7 @@ class Grid extends React.Component {
 const mapDispatch = (dispatch) => {
   return {
     loadUsers: () => dispatch(loadUsers()),
+    loadTodos: () => dispatch(loadTodos()),
     addUser: (user) => dispatch(addUser(user)),
   };
 };

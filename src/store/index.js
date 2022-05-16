@@ -3,7 +3,7 @@ import thunk from 'redux-thunk';
 import logger from 'redux-logger';
 import axios from 'axios';
 
-//slice
+//users slice----------------
 const LOAD_USERS = 'LOAD_USERS';
 const ADD_USER = 'ADD_USER';
 
@@ -48,8 +48,35 @@ const users = (state = [], action) => {
   }
 };
 
+//todos slice----------------
+const LOAD_TODOS = 'LOAD_TODOS';
+
+export const loadTodos = () => {
+  return async (dispatch) => {
+    try {
+      const response = await axios({
+        url: '/todos',
+        baseURL: 'http://localhost:42069',
+      });
+      dispatch({ type: LOAD_TODOS, todos: response.data });
+    } catch (error) {
+      console.log(error);
+    }
+  };
+};
+
+const todos = (state = [], action) => {
+  switch (action.type) {
+    case LOAD_TODOS:
+      return action.todos;
+    default:
+      return state;
+  }
+};
+
 const reducer = combineReducers({
-  users: users,
+  users,
+  todos,
 });
 
 const store = createStore(reducer, applyMiddleware(thunk, logger));
