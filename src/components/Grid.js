@@ -48,9 +48,17 @@ class Grid extends React.Component {
     return (
       <div>
         {selectedTable.length && Object.hasOwn(this.props, [selectedTable]) ? (
-          <p>hello</p>
+          <table>
+            <thead>
+              <tr>
+                {Object.keys(this.props[selectedTable][0]).map((field, i) => {
+                  return <th key={i}>{field}</th>;
+                })}
+              </tr>
+            </thead>
+          </table>
         ) : (
-          <p>goodbye</p>
+          <p>table not found</p>
         )}
         {/* <div>
           {users.length ? (
