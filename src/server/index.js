@@ -17,6 +17,16 @@ const User = db.define('user', {
   },
 });
 
+const Todo = db.define('todo', {
+  text: {
+    type: Sequelize.STRING,
+    allowNull: true,
+  },
+});
+
+Todo.belongsTo(User);
+User.hasMany(Todo);
+
 const init = async () => {
   try {
     await db.sync({ force: true });
@@ -26,6 +36,9 @@ const init = async () => {
       lastName: 'Cat',
     });
     const kiera = await User.create({ firstName: 'Kiera', lastName: 'Chien' });
+    await Todo.create({ text: 'buy cat food', userId: lisa.id });
+    await Todo.create({ text: 'eat cat food', userId: kitty.id });
+
     console.log('~~~db seeded!~~~');
     app.listen(42069, () => console.log(`listening on port hadrcoded 42069`));
   } catch (error) {

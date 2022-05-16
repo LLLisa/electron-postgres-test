@@ -6,11 +6,14 @@ class Grid extends React.Component {
   constructor() {
     super();
     this.state = {
+      table: '',
+      selectedTable: '',
       firstName: '',
       lastName: '',
     };
     this.handleOnChange = this.handleOnChange.bind(this);
     this.formSubmit = this.formSubmit.bind(this);
+    this.tableSubmit = this.tableSubmit.bind(this);
   }
 
   componentDidMount() {
@@ -29,14 +32,27 @@ class Grid extends React.Component {
       lastName: this.state.lastName,
     };
     this.props.addUser(user);
+    this.setState({ firstName: '', lastName: '' });
+  }
+
+  tableSubmit(ev) {
+    ev.preventDefault();
+    this.setState({ selectedTable: this.state.table });
+    this.setState({ table: '' });
   }
 
   render() {
     console.log('render', this.props, this.state);
     const { users } = this.props;
+    const { selectedTable } = this.state;
     return (
       <div>
-        <div>
+        {selectedTable.length && Object.hasOwn(this.props, [selectedTable]) ? (
+          <p>hello</p>
+        ) : (
+          <p>goodbye</p>
+        )}
+        {/* <div>
           {users.length ? (
             <ul>
               {users.map((user) => (
@@ -48,10 +64,19 @@ class Grid extends React.Component {
           ) : (
             ''
           )}
-        </div>
+        </div> */}
         <form>
           <input
-            autoFocus
+            name="table"
+            placeholder="table"
+            value={this.state.table}
+            onChange={this.handleOnChange}
+            style={{ margin: '2rem' }}
+          ></input>
+          <button onClick={this.tableSubmit}>submit</button>
+        </form>
+        <form>
+          <input
             name="firstName"
             placeholder="First Name"
             value={this.state.firstName}

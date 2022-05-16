@@ -24,7 +24,6 @@ export const loadUsers = () => {
 export const addUser = (user) => {
   return async (dispatch) => {
     try {
-      // const response = axios.post('/users', { test: 'test' });
       const response = await axios({
         method: 'post',
         url: '/users',
