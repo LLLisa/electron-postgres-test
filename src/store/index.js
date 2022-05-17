@@ -98,6 +98,14 @@ const models = (state = [], action) => {
   }
 };
 
+//experiment zone-----------------------------
+/*
+  get models
+  devise a way to get all rows for each model
+  get with /:param that will findall and return ffor that param?
+  generic gets
+*/
+
 //combine reducers------------------------------
 const reducer = combineReducers({
   users,

@@ -89,4 +89,6 @@ app.get('/models', (req, res, next) => {
   }
 });
 
+app.get('/generic/:model', async (rec, res, next) => {});
+
 module.exports = { db, init, User, app };
