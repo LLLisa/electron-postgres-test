@@ -1,54 +1,66 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { loadUsers, loadTodos, loadModels, addUser } from '../store';
+import { loadUsers, loadTodos, loadModels, addUser, switchDb } from '../store';
 
 class Grid extends React.Component {
   constructor() {
     super();
     this.state = {
+      databaseName: '',
       selectedTable: '',
-      firstName: '',
-      lastName: '',
+      // firstName: '',
+      // lastName: '',
     };
     this.handleOnChange = this.handleOnChange.bind(this);
-    this.formSubmit = this.formSubmit.bind(this);
-    this.tableSubmit = this.tableSubmit.bind(this);
+    this.handleDbSwitch = this.handleDbSwitch.bind(this);
+    // this.formSubmit = this.formSubmit.bind(this);
+    this.tableSelect = this.tableSelect.bind(this);
   }
 
   async componentDidMount() {
     console.log('CDM', this.props);
-    this.props.loadUsers();
-    this.props.loadTodos();
+    // this.props.loadUsers();
+    // this.props.loadTodos();
     await this.props.loadModels();
-    this.setState({ selectedTable: this.props.models[0] });
+    if (this.props.models.length) {
+      this.setState({ selectedTable: this.props.models[0] });
+    }
   }
 
   handleOnChange(ev) {
     this.setState({ [ev.target.name]: ev.target.value });
   }
 
-  formSubmit(ev) {
+  async handleDbSwitch(ev) {
     ev.preventDefault();
-    const user = {
-      firstName: this.state.firstName,
-      lastName: this.state.lastName,
-    };
-    this.props.addUser(user);
-    this.setState({ firstName: '', lastName: '' });
+    await this.props.switchDb(this.state.databaseName);
+    this.props.loadModels();
+    this.setState({ databaseName: '' });
   }
 
-  tableSubmit(ev) {
+  // formSubmit(ev) {
+  //   ev.preventDefault();
+  //   const user = {
+  //     firstName: this.state.firstName,
+  //     lastName: this.state.lastName,
+  //   };
+  //   this.props.addUser(user);
+  //   this.setState({ firstName: '', lastName: '' });
+  // }
+
+  tableSelect(ev) {
     ev.preventDefault();
     this.setState({ selectedTable: ev.target.value });
   }
 
   render() {
-    console.log('render', this.props, this.state);
+    // console.log('render', this.props, this.state);
     const { selectedTable } = this.state;
-    const { models } = this.props;
+    const { models, database } = this.props;
     return (
       <div>
-        {selectedTable.length && Object.hasOwn(this.props, [selectedTable]) ? (
+        <h1>current databse: {database}</h1>
+        {/* {selectedTable.length && Object.hasOwn(this.props, [selectedTable]) ? (
           <table>
             <thead>
               <tr>
@@ -71,11 +83,11 @@ class Grid extends React.Component {
           </table>
         ) : (
           <p>table not found</p>
-        )}
+        )} */}
         <select
           name="tableSelect"
           value={selectedTable}
-          onChange={this.tableSubmit}
+          onChange={this.tableSelect}
         >
           {models.length
             ? models.map((model, i) => {
@@ -84,6 +96,15 @@ class Grid extends React.Component {
             : ''}
         </select>
         <form>
+          <input
+            name="databaseName"
+            placeholder="database"
+            value={this.state.databaseName}
+            onChange={this.handleOnChange}
+          ></input>
+          <button onClick={this.handleDbSwitch}>submit</button>
+        </form>
+        {/* <form>
           <input
             name="firstName"
             placeholder="First Name"
@@ -97,7 +118,7 @@ class Grid extends React.Component {
             onChange={this.handleOnChange}
           ></input>
           <button onClick={this.formSubmit}>submit</button>
-        </form>
+        </form> */}
       </div>
     );
   }
@@ -108,7 +129,8 @@ const mapDispatch = (dispatch) => {
     loadUsers: () => dispatch(loadUsers()),
     loadTodos: () => dispatch(loadTodos()),
     loadModels: () => dispatch(loadModels()),
-    addUser: (user) => dispatch(addUser(user)),
+    // addUser: (user) => dispatch(addUser(user)),
+    switchDb: (databaseName) => dispatch(switchDb(databaseName)),
   };
 };
 

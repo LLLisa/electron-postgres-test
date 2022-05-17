@@ -84,6 +84,7 @@ export const loadModels = () => {
       url: '/models',
       baseURL: 'http://localhost:42069',
     });
+    console.log(response); //no data on 2nd run
     const responses = response.data.map((model) => inflection.pluralize(model));
     dispatch({ type: LOAD_MODELS, models: responses });
   };
@@ -98,11 +99,41 @@ const models = (state = [], action) => {
   }
 };
 
+//experiment zone-------------------------------
+const SWITCH_DB = 'SWITCH_DB';
+
+export const switchDb = (databaseName) => {
+  return async (dispatch) => {
+    try {
+      const response = await axios({
+        url: `/database/${databaseName}`,
+        baseURL: 'http://localhost:42069',
+      });
+      console.log(response.data);
+      dispatch({ type: SWITCH_DB, dbName: response.data });
+    } catch (error) {
+      console.log(error);
+    }
+  };
+};
+
+const database = (state = '', action) => {
+  switch (action.type) {
+    case SWITCH_DB:
+      return action.dbName;
+    default:
+      return state;
+  }
+};
+
+//----------------------------------------------
+
 //combine reducers------------------------------
 const reducer = combineReducers({
   users,
   todos,
   models,
+  database,
 });
 
 const store = createStore(reducer, applyMiddleware(thunk, logger));
