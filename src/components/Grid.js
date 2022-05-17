@@ -1,6 +1,12 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { loadUsers, loadTodos, loadModels, addUser } from '../store';
+import {
+  loadUsers,
+  loadTodos,
+  loadModels,
+  addUser,
+  genericLoader,
+} from '../store';
 
 class Grid extends React.Component {
   constructor() {
@@ -17,10 +23,16 @@ class Grid extends React.Component {
 
   async componentDidMount() {
     console.log('CDM', this.props);
-    this.props.loadUsers();
+    // this.props.loadUsers();
+    this.props.genericLoader('users');
     this.props.loadTodos();
     await this.props.loadModels();
     this.setState({ selectedTable: this.props.models[0] });
+  }
+
+  componentDidUpdate(prevProps) {
+    if (!prevProps.models.length && this.props.models.length) {
+    }
   }
 
   handleOnChange(ev) {
@@ -48,7 +60,7 @@ class Grid extends React.Component {
     const { models } = this.props;
     return (
       <div>
-        {selectedTable.length && Object.hasOwn(this.props, [selectedTable]) ? (
+        {/* {selectedTable.length && Object.hasOwn(this.props, [selectedTable]) ? (
           <table>
             <thead>
               <tr>
@@ -71,7 +83,7 @@ class Grid extends React.Component {
           </table>
         ) : (
           <p>table not found</p>
-        )}
+        )} */}
         <select
           name="tableSelect"
           value={selectedTable}
@@ -109,6 +121,7 @@ const mapDispatch = (dispatch) => {
     loadTodos: () => dispatch(loadTodos()),
     loadModels: () => dispatch(loadModels()),
     addUser: (user) => dispatch(addUser(user)),
+    genericLoader: (slice) => dispatch(genericLoader(slice)),
   };
 };
 

@@ -38,16 +38,16 @@ export const addUser = (user) => {
   };
 };
 
-const users = (state = [], action) => {
-  switch (action.type) {
-    case LOAD_USERS:
-      return action.users;
-    case ADD_USER:
-      return [...state, action.newUser];
-    default:
-      return state;
-  }
-};
+// const users = (state = [], action) => {
+//   switch (action.type) {
+//     case LOAD_USERS:
+//       return action.users;
+//     case ADD_USER:
+//       return [...state, action.newUser];
+//     default:
+//       return state;
+//   }
+// };
 
 //todos slice----------------
 const LOAD_TODOS = 'LOAD_TODOS';
@@ -104,13 +104,43 @@ const models = (state = [], action) => {
   devise a way to get all rows for each model
   get with /:param that will findall and return ffor that param?
   generic gets
+  need dnew model for reducer
+   - just have a slice prop on action
+    - reducer just returns a state
 */
+const LOAD_GENERIC = 'LOAD_GENERIC';
+
+export const genericLoader = (slice) => {
+  return async (dispatch) => {
+    try {
+      // const param = inflection.capitalize(inflection.singularize(slice));
+      // console.log('>>>', param);
+      const param = slice;
+      const response = await axios({
+        url: `/generic/${param}`,
+        baseURL: 'http://localhost:42069',
+      });
+      console.log(response.data);
+      dispatch({ type: LOAD_GENERIC, payload: response.data, slice });
+    } catch (error) {
+      console.log(error);
+    }
+  };
+};
+
+const genericLoaderReducer = (initialState = [], action) => {
+  console.log(action);
+  if (action.type === LOAD_GENERIC) return action.payload;
+  return initialState;
+};
+// const users = genericLoaderReducer([], action);
 
 //combine reducers------------------------------
 const reducer = combineReducers({
-  users,
+  users: genericLoaderReducer,
   todos,
   models,
+  // genericLoaderReducer,
 });
 
 const store = createStore(reducer, applyMiddleware(thunk, logger));

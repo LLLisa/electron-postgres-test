@@ -5,6 +5,7 @@ const db = new Sequelize('postgres://localhost/electron-test', {
 
 const path = require('path');
 const express = require('express');
+const req = require('express/lib/request');
 const app = express();
 
 // const app = require('./api');
@@ -89,6 +90,16 @@ app.get('/models', (req, res, next) => {
   }
 });
 
-app.get('/generic/:model', async (rec, res, next) => {});
+app.get('/generic/:model', async (req, res, next) => {
+  try {
+    const response = await db.query(`SELECT * FROM ${req.params.model};`);
+    // const response = await req.params.model.findAll();
+    console.log('>>>>>', response[0]);
+
+    res.send(response[0]);
+  } catch (error) {
+    next(error);
+  }
+});
 
 module.exports = { db, init, User, app };
