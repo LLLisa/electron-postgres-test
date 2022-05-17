@@ -6,7 +6,6 @@ class Grid extends React.Component {
   constructor() {
     super();
     this.state = {
-      table: '',
       selectedTable: '',
       firstName: '',
       lastName: '',
@@ -16,11 +15,12 @@ class Grid extends React.Component {
     this.tableSubmit = this.tableSubmit.bind(this);
   }
 
-  componentDidMount() {
+  async componentDidMount() {
     console.log('CDM', this.props);
     this.props.loadUsers();
     this.props.loadTodos();
-    this.props.loadModels();
+    await this.props.loadModels();
+    this.setState({ selectedTable: this.props.models[0] });
   }
 
   handleOnChange(ev) {
@@ -39,12 +39,11 @@ class Grid extends React.Component {
 
   tableSubmit(ev) {
     ev.preventDefault();
-    this.setState({ selectedTable: this.state.table });
-    this.setState({ table: '' });
+    this.setState({ selectedTable: ev.target.value });
   }
 
   render() {
-    // console.log('render', this.props, this.state);
+    console.log('render', this.props, this.state);
     const { selectedTable } = this.state;
     const { models } = this.props;
     return (
@@ -73,16 +72,17 @@ class Grid extends React.Component {
         ) : (
           <p>table not found</p>
         )}
-        <form>
-          <input
-            name="table"
-            placeholder="table"
-            value={this.state.table}
-            onChange={this.handleOnChange}
-            style={{ margin: '2rem' }}
-          ></input>
-          <button onClick={this.tableSubmit}>submit</button>
-        </form>
+        <select
+          name="tableSelect"
+          value={selectedTable}
+          onChange={this.tableSubmit}
+        >
+          {models.length
+            ? models.map((model, i) => {
+                return <option key={i}>{model}</option>;
+              })
+            : ''}
+        </select>
         <form>
           <input
             name="firstName"
