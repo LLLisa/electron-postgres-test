@@ -1,6 +1,6 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { loadUsers, loadTodos, addUser } from '../store';
+import { loadUsers, loadTodos, loadModels, addUser } from '../store';
 
 class Grid extends React.Component {
   constructor() {
@@ -20,6 +20,7 @@ class Grid extends React.Component {
     console.log('CDM', this.props);
     this.props.loadUsers();
     this.props.loadTodos();
+    this.props.loadModels();
   }
 
   handleOnChange(ev) {
@@ -43,9 +44,9 @@ class Grid extends React.Component {
   }
 
   render() {
-    console.log('render', this.props, this.state);
-    const { users } = this.props;
+    // console.log('render', this.props, this.state);
     const { selectedTable } = this.state;
+    const { models } = this.props;
     return (
       <div>
         {selectedTable.length && Object.hasOwn(this.props, [selectedTable]) ? (
@@ -106,6 +107,7 @@ const mapDispatch = (dispatch) => {
   return {
     loadUsers: () => dispatch(loadUsers()),
     loadTodos: () => dispatch(loadTodos()),
+    loadModels: () => dispatch(loadModels()),
     addUser: (user) => dispatch(addUser(user)),
   };
 };

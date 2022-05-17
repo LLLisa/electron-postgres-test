@@ -2,6 +2,7 @@ import { createStore, combineReducers, applyMiddleware } from 'redux';
 import thunk from 'redux-thunk';
 import logger from 'redux-logger';
 import axios from 'axios';
+import inflection from 'inflection';
 
 //users slice----------------
 const LOAD_USERS = 'LOAD_USERS';
@@ -74,9 +75,34 @@ const todos = (state = [], action) => {
   }
 };
 
+//models slice ---------------
+const LOAD_MODELS = 'LOAD_MODELS';
+
+export const loadModels = () => {
+  return async (dispatch) => {
+    const response = await axios({
+      url: '/models',
+      baseURL: 'http://localhost:42069',
+    });
+    const responses = response.data.map((model) => inflection.pluralize(model));
+    dispatch({ type: LOAD_MODELS, models: responses });
+  };
+};
+
+const models = (state = [], action) => {
+  switch (action.type) {
+    case LOAD_MODELS:
+      return action.models;
+    default:
+      return state;
+  }
+};
+
+//combine reducers------------------------------
 const reducer = combineReducers({
   users,
   todos,
+  models,
 });
 
 const store = createStore(reducer, applyMiddleware(thunk, logger));

@@ -2,6 +2,7 @@ const Sequelize = require('sequelize');
 const db = new Sequelize('postgres://localhost/electron-test', {
   logging: false,
 });
+
 const path = require('path');
 const express = require('express');
 const app = express();
@@ -75,6 +76,14 @@ app.get('/todos', async (req, res, next) => {
   try {
     const response = await Todo.findAll();
     res.send(response);
+  } catch (error) {
+    next(error);
+  }
+});
+
+app.get('/models', (req, res, next) => {
+  try {
+    res.send(Object.keys(db.models));
   } catch (error) {
     next(error);
   }
