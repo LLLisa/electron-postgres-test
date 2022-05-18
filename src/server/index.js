@@ -5,9 +5,8 @@ const db = new Sequelize('postgres://localhost/electron-test', {
 
 const path = require('path');
 const express = require('express');
+const req = require('express/lib/request');
 const app = express();
-
-// const app = require('./api');
 
 const User = db.define('user', {
   firstName: {
@@ -47,6 +46,7 @@ const init = async () => {
   }
 };
 
+//server api-----------------------------------------
 app.use('/dist', express.static(path.join(__dirname, '../../dist')));
 app.use(express.json());
 
@@ -54,36 +54,19 @@ app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, '../index.html'));
 });
 
-app.get('/users', async (req, res, next) => {
-  try {
-    const response = await User.findAll();
-    res.send(response);
-  } catch (error) {
-    next(error);
-  }
-});
-
-app.post('/users', async (req, res, next) => {
-  try {
-    const response = await User.create(req.body.user);
-    res.send(response);
-  } catch (error) {
-    next(error);
-  }
-});
-
-app.get('/todos', async (req, res, next) => {
-  try {
-    const response = await Todo.findAll();
-    res.send(response);
-  } catch (error) {
-    next(error);
-  }
-});
-
 app.get('/models', (req, res, next) => {
   try {
     res.send(Object.keys(db.models));
+  } catch (error) {
+    next(error);
+  }
+});
+
+app.get('/generic/:model', async (req, res, next) => {
+  try {
+    const response = await db.query(`SELECT * FROM ${req.params.model};`);
+    console.log('>>>>>', response[0]);
+    res.send(response[0]);
   } catch (error) {
     next(error);
   }

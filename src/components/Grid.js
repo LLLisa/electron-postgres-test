@@ -1,40 +1,34 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { loadUsers, loadTodos, loadModels, addUser } from '../store';
+import { loadModels, genericLoader } from '../store';
+import inflection from 'inflection';
 
 class Grid extends React.Component {
   constructor() {
     super();
     this.state = {
       selectedTable: '',
-      firstName: '',
-      lastName: '',
     };
     this.handleOnChange = this.handleOnChange.bind(this);
-    this.formSubmit = this.formSubmit.bind(this);
     this.tableSubmit = this.tableSubmit.bind(this);
   }
 
   async componentDidMount() {
     console.log('CDM', this.props);
-    this.props.loadUsers();
-    this.props.loadTodos();
-    await this.props.loadModels();
-    this.setState({ selectedTable: this.props.models[0] });
+    const { loadModels, genericLoader } = this.props;
+    await loadModels();
+    await Promise.all(
+      this.props.models.map((model) =>
+        genericLoader(inflection.pluralize(model))
+      )
+    );
+    this.setState({
+      selectedTable: inflection.pluralize(this.props.models[0]),
+    });
   }
 
   handleOnChange(ev) {
     this.setState({ [ev.target.name]: ev.target.value });
-  }
-
-  formSubmit(ev) {
-    ev.preventDefault();
-    const user = {
-      firstName: this.state.firstName,
-      lastName: this.state.lastName,
-    };
-    this.props.addUser(user);
-    this.setState({ firstName: '', lastName: '' });
   }
 
   tableSubmit(ev) {
@@ -43,7 +37,7 @@ class Grid extends React.Component {
   }
 
   render() {
-    console.log('render', this.props, this.state);
+    // console.log('render', this.props, this.state);
     const { selectedTable } = this.state;
     const { models } = this.props;
     return (
@@ -79,25 +73,10 @@ class Grid extends React.Component {
         >
           {models.length
             ? models.map((model, i) => {
-                return <option key={i}>{model}</option>;
+                return <option key={i}>{inflection.pluralize(model)}</option>;
               })
             : ''}
         </select>
-        <form>
-          <input
-            name="firstName"
-            placeholder="First Name"
-            value={this.state.firstName}
-            onChange={this.handleOnChange}
-          ></input>
-          <input
-            name="lastName"
-            placeholder="Last Name"
-            value={this.state.lastName}
-            onChange={this.handleOnChange}
-          ></input>
-          <button onClick={this.formSubmit}>submit</button>
-        </form>
       </div>
     );
   }
@@ -105,10 +84,8 @@ class Grid extends React.Component {
 
 const mapDispatch = (dispatch) => {
   return {
-    loadUsers: () => dispatch(loadUsers()),
-    loadTodos: () => dispatch(loadTodos()),
     loadModels: () => dispatch(loadModels()),
-    addUser: (user) => dispatch(addUser(user)),
+    genericLoader: (slice) => dispatch(genericLoader(slice)),
   };
 };
 

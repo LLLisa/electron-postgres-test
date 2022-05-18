@@ -4,106 +4,62 @@ import logger from 'redux-logger';
 import axios from 'axios';
 import inflection from 'inflection';
 
-//users slice----------------
-const LOAD_USERS = 'LOAD_USERS';
-const ADD_USER = 'ADD_USER';
-
-export const loadUsers = () => {
-  return async (dispatch) => {
-    try {
-      const response = await axios({
-        url: '/users',
-        baseURL: 'http://localhost:42069',
-      });
-      dispatch({ type: LOAD_USERS, users: response.data });
-    } catch (error) {
-      console.log(error);
-    }
-  };
-};
-
-export const addUser = (user) => {
-  return async (dispatch) => {
-    try {
-      const response = await axios({
-        method: 'post',
-        url: '/users',
-        baseURL: 'http://localhost:42069',
-        data: { user },
-      });
-      dispatch({ type: ADD_USER, newUser: response.data });
-    } catch (error) {
-      console.log(error);
-    }
-  };
-};
-
-const users = (state = [], action) => {
-  switch (action.type) {
-    case LOAD_USERS:
-      return action.users;
-    case ADD_USER:
-      return [...state, action.newUser];
-    default:
-      return state;
-  }
-};
-
-//todos slice----------------
-const LOAD_TODOS = 'LOAD_TODOS';
-
-export const loadTodos = () => {
-  return async (dispatch) => {
-    try {
-      const response = await axios({
-        url: '/todos',
-        baseURL: 'http://localhost:42069',
-      });
-      dispatch({ type: LOAD_TODOS, todos: response.data });
-    } catch (error) {
-      console.log(error);
-    }
-  };
-};
-
-const todos = (state = [], action) => {
-  switch (action.type) {
-    case LOAD_TODOS:
-      return action.todos;
-    default:
-      return state;
-  }
-};
-
 //models slice ---------------
 const LOAD_MODELS = 'LOAD_MODELS';
+
+const models = (state = [], action) => {
+  if (action.type === LOAD_MODELS) return action.payload;
+  return state;
+};
 
 export const loadModels = () => {
   return async (dispatch) => {
     const response = await axios({
       url: '/models',
-      baseURL: 'http://localhost:42069',
+      baseURL: 'http://localhost:42069', //should be dynamic
     });
-    const responses = response.data.map((model) => inflection.pluralize(model));
-    dispatch({ type: LOAD_MODELS, models: responses });
+    dispatch({ type: LOAD_MODELS, payload: response.data });
   };
 };
 
-const models = (state = [], action) => {
-  switch (action.type) {
-    case LOAD_MODELS:
-      return action.models;
-    default:
-      return state;
-  }
+//experiment zone-----------------------------
+export const genericLoader = (slice) => {
+  return async (dispatch) => {
+    try {
+      const response = await axios({
+        url: `/generic/${slice}`,
+        baseURL: 'http://localhost:42069',
+      });
+      dispatch({ type: `LOAD_${slice}`, payload: response.data });
+    } catch (error) {
+      console.log(error);
+    }
+  };
 };
 
-//combine reducers------------------------------
-const reducer = combineReducers({
-  users,
-  todos,
-  models,
+const genericReducer = (slice) => {
+  return (state = [], action) => {
+    if (action.type === `LOAD_${slice}`) return action.payload;
+    return state;
+  };
+};
+
+//conduct witchcraft on the reducer
+const reducerBody = {};
+const modelsPreLoad = await axios({
+  url: '/models',
+  baseURL: 'http://localhost:42069', //should be dynamic
 });
+
+const preModels = modelsPreLoad.data;
+
+for (let i = 0; i < preModels.length; i++) {
+  preModels[i] = inflection.pluralize(preModels[i]);
+  reducerBody[preModels[i]] = genericReducer(preModels[i]);
+}
+
+//combine reducers------------------------------
+const reducer = combineReducers({ models, ...reducerBody });
 
 const store = createStore(reducer, applyMiddleware(thunk, logger));
 
