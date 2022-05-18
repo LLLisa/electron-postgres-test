@@ -55,27 +55,10 @@ app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, '../index.html'));
 });
 
-app.get('/users', async (req, res, next) => {
-  try {
-    const response = await User.findAll();
-    res.send(response);
-  } catch (error) {
-    next(error);
-  }
-});
-
+//deprecated, but keep around for testinng
 app.post('/users', async (req, res, next) => {
   try {
     const response = await User.create(req.body.user);
-    res.send(response);
-  } catch (error) {
-    next(error);
-  }
-});
-
-app.get('/todos', async (req, res, next) => {
-  try {
-    const response = await Todo.findAll();
     res.send(response);
   } catch (error) {
     next(error);
@@ -93,9 +76,7 @@ app.get('/models', (req, res, next) => {
 app.get('/generic/:model', async (req, res, next) => {
   try {
     const response = await db.query(`SELECT * FROM ${req.params.model};`);
-    // const response = await req.params.model.findAll();
-    console.log('>>>>>', response[0]);
-
+    // console.log('>>>>>', response[0]);
     res.send(response[0]);
   } catch (error) {
     next(error);
