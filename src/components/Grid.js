@@ -15,11 +15,13 @@ class Grid extends React.Component {
 
   async componentDidMount() {
     console.log('CDM', this.props);
-    await Promise.all([
-      this.props.genericLoader('users'),
-      this.props.genericLoader('todos'),
-      this.props.loadModels(),
-    ]);
+    const { loadModels, genericLoader } = this.props;
+    await loadModels();
+    await Promise.all(
+      this.props.models.map((model) =>
+        genericLoader(inflection.pluralize(model))
+      )
+    );
     this.setState({
       selectedTable: inflection.pluralize(this.props.models[0]),
     });
@@ -35,7 +37,7 @@ class Grid extends React.Component {
   }
 
   render() {
-    console.log('render', this.props, this.state);
+    // console.log('render', this.props, this.state);
     const { selectedTable } = this.state;
     const { models } = this.props;
     return (

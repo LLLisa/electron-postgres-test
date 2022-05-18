@@ -76,7 +76,7 @@ app.get('/models', (req, res, next) => {
 app.get('/generic/:model', async (req, res, next) => {
   try {
     const response = await db.query(`SELECT * FROM ${req.params.model};`);
-    // console.log('>>>>>', response[0]);
+    console.log('>>>>>', response[0]);
     res.send(response[0]);
   } catch (error) {
     next(error);
