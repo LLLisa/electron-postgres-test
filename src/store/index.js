@@ -7,24 +7,22 @@ import inflection from 'inflection';
 //models slice ---------------
 const LOAD_MODELS = 'LOAD_MODELS';
 
+const models = (state = [], action) => {
+  if (action.type === LOAD_MODELS) return action.payload;
+  return state;
+};
+
 export const loadModels = () => {
   return async (dispatch) => {
     const response = await axios({
       url: '/models',
       baseURL: 'http://localhost:42069', //should be dynamic
     });
-    const responses = response.data.map((model) => inflection.pluralize(model));
     dispatch({ type: LOAD_MODELS, payload: response.data });
   };
 };
 
-const models = (state = [], action) => {
-  if (action.type === LOAD_MODELS) return action.payload;
-  return state;
-};
-
 //experiment zone-----------------------------
-
 export const genericLoader = (slice) => {
   return async (dispatch) => {
     try {
@@ -41,18 +39,27 @@ export const genericLoader = (slice) => {
 
 const genericReducer = (slice) => {
   return (state = [], action) => {
-    console.log(action);
     if (action.type === `LOAD_${slice}`) return action.payload;
     return state;
   };
 };
 
-//combine reducers------------------------------
-const reducer = combineReducers({
-  models,
-  users: genericReducer('users'),
-  todos: genericReducer('todos'),
+//conduct witchcraft on the reducer
+const reducerBody = {};
+const modelsPreLoad = await axios({
+  url: '/models',
+  baseURL: 'http://localhost:42069', //should be dynamic
 });
+
+const preModels = modelsPreLoad.data;
+
+for (let i = 0; i < preModels.length; i++) {
+  preModels[i] = inflection.pluralize(preModels[i]);
+  reducerBody[preModels[i]] = genericReducer(preModels[i]);
+}
+
+//combine reducers------------------------------
+const reducer = combineReducers({ models, ...reducerBody });
 
 const store = createStore(reducer, applyMiddleware(thunk, logger));
 

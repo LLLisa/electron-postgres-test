@@ -8,8 +8,6 @@ const express = require('express');
 const req = require('express/lib/request');
 const app = express();
 
-// const app = require('./api');
-
 const User = db.define('user', {
   firstName: {
     type: Sequelize.STRING,
@@ -48,21 +46,12 @@ const init = async () => {
   }
 };
 
+//server api-----------------------------------------
 app.use('/dist', express.static(path.join(__dirname, '../../dist')));
 app.use(express.json());
 
 app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, '../index.html'));
-});
-
-//deprecated, but keep around for testinng
-app.post('/users', async (req, res, next) => {
-  try {
-    const response = await User.create(req.body.user);
-    res.send(response);
-  } catch (error) {
-    next(error);
-  }
 });
 
 app.get('/models', (req, res, next) => {

@@ -84,8 +84,6 @@ class Grid extends React.Component {
 
 const mapDispatch = (dispatch) => {
   return {
-    loadUsers: () => dispatch(loadUsers()),
-    loadTodos: () => dispatch(loadTodos()),
     loadModels: () => dispatch(loadModels()),
     genericLoader: (slice) => dispatch(genericLoader(slice)),
   };
